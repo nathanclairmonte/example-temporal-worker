@@ -1,0 +1,14 @@
+[project]
+name = "example-temporal-worker"
+version = "0.1.0"
+description = "Example repo to showcase how to create Activities, Workflows & workers for use with temporal-worker-k8s charm"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "temporalio>=1.13.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12.0",
+]

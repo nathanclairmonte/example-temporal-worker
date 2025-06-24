@@ -5,6 +5,7 @@ description = "Example repo to showcase how to create Activities, Workflows & wo
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "python-dotenv>=1.1.1",
     "temporalio>=1.13.0",
 ]
 
@@ -12,3 +13,12 @@ dependencies = [
 dev = [
     "ruff>=0.12.0",
 ]
+
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.lint]
+# Add the `line-too-long` rule to the enforced rule set. By default, Ruff omits rules that
+# overlap with the use of a formatter, like Black, but we can override this behavior by
+# explicitly adding the rule.
+extend-select = ["E501", "I001"]

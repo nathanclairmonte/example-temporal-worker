@@ -96,7 +96,7 @@ tasks:
   follow-charm-logs:
     desc: Follow the logs of the worker charm
     cmds:
-      - microk8s kubectl -n worker-model logs {{.APP_NAME}}-0 -c temporal-worker
+      - microk8s kubectl -n worker-model logs {{.APP_NAME}}-0 -c temporal-worker -f
 
   juju-start-workflow:
     desc: Start the example Workflow using the charmed Temporal cluster and worker.

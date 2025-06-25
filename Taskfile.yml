@@ -88,7 +88,7 @@ tasks:
     cmds:
       - |
         juju config {{.APP_NAME}} \
-          host="temporal-k8s.temporal-model:7233" \ 
+          host="temporal-k8s.temporal-model:7233" \
           queue="example-workflow-queue" \
           namespace="default"
 

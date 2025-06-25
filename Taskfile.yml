@@ -6,6 +6,7 @@ vars:
   ROCK_NAME: example-temporal-worker_0.1_amd64.rock
   IMAGE_NAME: example-temporal-worker-rock:latest
   CONTAINER_NAME: example-temporal-worker
+  APP_NAME: example-temporal-worker
 
 tasks:
   default:
@@ -47,7 +48,9 @@ tasks:
   load-image-local:
     desc: Load the .rock image into local docker registry
     cmds:
-      - rockcraft.skopeo --insecure-policy copy oci-archive:{{.ROCK_NAME}} docker-daemon:{{.IMAGE_NAME}}
+      - |
+        rockcraft.skopeo --insecure-policy copy oci-archive:{{.ROCK_NAME}} \
+          docker-daemon:{{.IMAGE_NAME}}
 
   docker-run:
     desc: Run the rock image (with --network set to host)
@@ -62,5 +65,34 @@ tasks:
   docker-cleanup:
     desc: Cleanup docker container and image
     cmds:
-      - docker stop {{.CONTAINER_NAME}}
-      - docker rmi {{.IMAGE_NAME}}
+      - docker stop {{.CONTAINER_NAME}} || echo "Container not running or doesn't exist"
+      - docker rmi {{.IMAGE_NAME}} || echo "Image already removed or doesn't exist"
+
+  load-image-mk8s:
+    desc: Load the .rock image into microk8s registry
+    cmds:
+      - |
+        rockcraft.skopeo --insecure-policy copy --dest-tls-verify=false \
+          oci-archive:{{.ROCK_NAME}} \
+          docker://localhost:32000/{{.IMAGE_NAME}}
+
+  deploy-worker-charm:
+    desc: Deploy the temporal-worker-k8s charm using the rock as resource
+    cmds:
+      - |
+        juju deploy temporal-worker-k8s {{.APP_NAME}} \
+          --resource temporal-worker-image=localhost:32000/{{.IMAGE_NAME}}
+
+  configure-worker-charm:
+    desc: Configure the temporal-worker-k8s charm. This is specific to the microk8s juju setup.
+    cmds:
+      - |
+        juju config temporal-worker-k8s \
+          host="temporal-k8s.temporal-model:7233" \ 
+          queue="example-workflow-queue" \
+          namespace="default"
+
+  follow-charm-logs:
+    desc: Follow the logs of the worker charm
+    cmds:
+      - microk8s kubectl -n worker-model logs {{.APP_NAME}}-0 -c temporal-worker

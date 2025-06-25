@@ -7,6 +7,7 @@ vars:
   IMAGE_NAME: example-temporal-worker-rock:latest
   CONTAINER_NAME: example-temporal-worker
   APP_NAME: example-temporal-worker
+  QUEUE_NAME: example-workflow-queue
 
 tasks:
   default:
@@ -89,10 +90,20 @@ tasks:
       - |
         juju config {{.APP_NAME}} \
           host="temporal-k8s.temporal-model:7233" \
-          queue="example-workflow-queue" \
+          queue="{{.QUEUE_NAME}}" \
           namespace="default"
 
   follow-charm-logs:
     desc: Follow the logs of the worker charm
     cmds:
       - microk8s kubectl -n worker-model logs {{.APP_NAME}}-0 -c temporal-worker
+
+  juju-start-workflow:
+    desc: Start the example Workflow using the charmed Temporal cluster and worker.
+    cmds:
+      - |
+        juju run temporal-admin-k8s/0 tctl args='workflow start \
+          --taskqueue {{.QUEUE_NAME}} \
+          --workflow_type FakeReplicateWorkflow \
+          --execution_timeout 30 \
+          --input {"source_post_id":11111,"regions":["americas"],"job_id":22222,"user_email":"nathan.clairmonte@canonical.com"}'

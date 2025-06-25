@@ -87,7 +87,7 @@ tasks:
     desc: Configure the temporal-worker-k8s charm. This is specific to the microk8s juju setup.
     cmds:
       - |
-        juju config temporal-worker-k8s \
+        juju config {{.APP_NAME}} \
           host="temporal-k8s.temporal-model:7233" \ 
           queue="example-workflow-queue" \
           namespace="default"

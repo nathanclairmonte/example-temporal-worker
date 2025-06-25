@@ -104,6 +104,6 @@ tasks:
       - |
         juju run temporal-admin-k8s/0 tctl args='workflow start \
           --taskqueue {{.QUEUE_NAME}} \
-          --workflow_type FakeReplicateWorkflow \
+          --workflow_type FakeReplicateJobPostsWorkflow \
           --execution_timeout 30 \
           --input {"source_post_id":11111,"regions":["americas"],"job_id":22222,"user_email":"nathan.clairmonte@canonical.com"}'

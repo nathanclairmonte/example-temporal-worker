@@ -2,6 +2,11 @@
 
 version: "3"
 
+vars:
+  ROCK_NAME: example-temporal-worker_0.1_amd64.rock
+  IMAGE_NAME: example-temporal-worker-rock:latest
+  CONTAINER_NAME: example-temporal-worker
+
 tasks:
   default:
     desc: List all tasks
@@ -33,3 +38,29 @@ tasks:
     desc: Start a "Fake Replicate" Workflow
     cmds:
       - uv run python -m temporal_worker.python_scripts.start_workflow
+
+  pack:
+    desc: Pack the rock
+    cmds:
+      - rockcraft pack -v
+
+  load-image-local:
+    desc: Load the .rock image into local docker registry
+    cmds:
+      - rockcraft.skopeo --insecure-policy copy oci-archive:{{.ROCK_NAME}} docker-daemon:{{.IMAGE_NAME}}
+
+  docker-run:
+    desc: Run the rock image (with --network set to host)
+    cmds:
+      - docker run --rm -d --name {{.CONTAINER_NAME}} --network host {{.IMAGE_NAME}}
+
+  docker-exec:
+    desc: Exec into the running container
+    cmds:
+      - docker exec -it {{.CONTAINER_NAME}} bash
+
+  docker-cleanup:
+    desc: Cleanup docker container and image
+    cmds:
+      - docker stop {{.CONTAINER_NAME}}
+      - docker rmi {{.IMAGE_NAME}}

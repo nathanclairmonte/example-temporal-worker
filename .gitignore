@@ -12,3 +12,7 @@ wheels/
 # Environment Variables
 .env
 .env.*
+
+# Rockcraft/Charmcraft
+**/*.rock
+**/*.charm

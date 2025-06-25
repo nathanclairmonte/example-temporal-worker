@@ -1,0 +1,35 @@
+# https://taskfile.dev
+
+version: "3"
+
+tasks:
+  default:
+    desc: List all tasks
+    cmds:
+      - task: list
+
+  list:
+    desc: List all tasks
+    silent: true
+    cmds:
+      - task --list-all
+
+  lint:
+    desc: Run linter
+    cmds:
+      - uv run ruff check
+
+  format:
+    desc: Run formatter
+    cmds:
+      - uv run ruff format
+
+  run-worker:
+    desc: Run the Temporal worker
+    cmds:
+      - uv run python -m temporal_worker.worker
+
+  start-workflow:
+    desc: Start a "Fake Replicate" Workflow
+    cmds:
+      - uv run python -m temporal_worker.python_scripts.start_workflow
